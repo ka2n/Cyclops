@@ -187,8 +187,6 @@ public class Cyclops {
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI
             return angle
-        default:
-            return NSValue()
         }
     }
 }
