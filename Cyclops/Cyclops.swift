@@ -162,11 +162,11 @@ public class Cyclops {
             return (frame.values[2] ?? 100.0) / 100.0
         case .Position:
             // Make relative position
-            let x = curve.begin[0] - (frame.values[0] ?? 0.0) + Double(center.x)
-            let y = curve.begin[1] - (frame.values[1] ?? 0.0) + Double(center.y)
+            let x = (frame.values[0] ?? 0.0) - curve.begin[0] + Double(center.x)
+            let y = (frame.values[1] ?? 0.0) - curve.begin[1] + Double(center.y)
             return NSValue(CGPoint: CGPointMake(CGFloat(x), CGFloat(y)))
         case .RotationX, .RotationY, .RotationZ:
-            let angle = frame.values.first! / 180.0 * M_PI
+            let angle = frame.values.first! / 180.0 * M_PI * -1
             return angle
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
