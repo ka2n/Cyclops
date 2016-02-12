@@ -91,27 +91,27 @@ public class Cyclops {
     }
     
     public func animation(name:String, ofProperty prop:Property) -> CAAnimation? {
-        return animation(name, ofProperty: prop, center: CGPointZero)
+        return animation(name, ofProperty: prop, value: nil)
     }
     
-    public func animation(name:String, ofProperty prop:Property, center: CGPoint) -> CAAnimation? {
+    public func animation(name:String, ofProperty prop:Property, value: NSValue?) -> CAAnimation? {
         guard let curve = curves[name] else { return nil }
         
         if prop == .Scale {
             let combinedAnim = CAAnimationGroup()
             combinedAnim.animations = [
-                keyframeAnimation(curve, prop: .ScaleX, center: center),
-                keyframeAnimation(curve, prop: .ScaleY, center: center),
-                keyframeAnimation(curve, prop: .ScaleZ, center: center)
+                keyframeAnimation(curve, prop: .ScaleX, value: value),
+                keyframeAnimation(curve, prop: .ScaleY, value: value),
+                keyframeAnimation(curve, prop: .ScaleZ, value: value)
             ]
             combinedAnim.duration = (combinedAnim.animations?.first!.duration)!
             return combinedAnim
         } else {
-            return keyframeAnimation(curve, prop: prop, center: center)
+            return keyframeAnimation(curve, prop: prop, value: value)
         }
     }
     
-    func keyframeAnimation(curve:CurveData, prop:Property, center:CGPoint) -> CAAnimation {
+    func keyframeAnimation(curve:CurveData, prop:Property, value:NSValue?) -> CAAnimation {
         var keyPath = "transform"
         switch prop {
         case .ScaleX:
@@ -142,7 +142,7 @@ public class Cyclops {
         // Add Keypoints
         anim.keyTimes = curve.frames.map { ($0.time / 1000.0) / anim.duration }
         anim.timingFunctions = curve.frames.map { _ in CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn) }
-        anim.values = curve.frames.map { animationValue($0, curve: curve, prop: prop, center: center) }
+        anim.values = curve.frames.map { animationValue($0, curve: curve, prop: prop, value: value) }
         
         // Add Initial delay
         anim.keyTimes?.insert(0, atIndex: 0)
@@ -152,7 +152,7 @@ public class Cyclops {
     }
     
     
-    func animationValue(frame:FrameData, curve:CurveData, prop:Property, center: CGPoint) ->  AnyObject {
+    func animationValue(frame:FrameData, curve:CurveData, prop:Property, value: NSValue?) ->  AnyObject {
         switch prop {
         case .ScaleX:
             return (frame.values[0] ?? 100.0) / 100.0
@@ -161,13 +161,24 @@ public class Cyclops {
         case .ScaleZ:
             return (frame.values[2] ?? 100.0) / 100.0
         case .Position:
+            var adjustX = 0.0
+            var adjustY = 0.0
+            if let center = value?.CGPointValue() {
+                adjustX = Double(center.x)
+                adjustY = Double(center.y)
+            }
+            
             // Make relative position
-            let x = (frame.values[0] ?? 0.0) - curve.begin[0] + Double(center.x)
-            let y = (frame.values[1] ?? 0.0) - curve.begin[1] + Double(center.y)
+            let x = (frame.values[0] ?? 0.0) - curve.begin[0] + adjustX
+            let y = (frame.values[1] ?? 0.0) - curve.begin[1] + adjustY
             return NSValue(CGPoint: CGPointMake(CGFloat(x), CGFloat(y)))
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI * -1
-            return angle
+            var adjust = 0.0
+            if let initialRotation = value as? NSNumber {
+                adjust = initialRotation.doubleValue
+            }
+            return angle + adjust
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
         }
