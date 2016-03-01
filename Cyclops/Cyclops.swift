@@ -174,7 +174,9 @@ public class Cyclops {
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI * -1
             let adjust = value?["initialRotation"] as? Double ?? 0.0
+            let invert = value?["invert"] as? Bool ?? false
             return angle + adjust
+            return angle * (invert ? -1 : 1) + adjust
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
         }
