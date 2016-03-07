@@ -94,7 +94,7 @@ public class Cyclops {
         return animation(name, ofProperty: prop, value: nil)
     }
     
-    public func animation(name:String, ofProperty prop:Property, value: NSValue?) -> CAAnimation? {
+    public func animation(name:String, ofProperty prop:Property, value: [String:AnyObject]?) -> CAAnimation? {
         guard let curve = curves[name] else { return nil }
         
         if prop == .Scale {
@@ -111,7 +111,7 @@ public class Cyclops {
         }
     }
     
-    func keyframeAnimation(curve:CurveData, prop:Property, value:NSValue?) -> CAAnimation {
+    func keyframeAnimation(curve:CurveData, prop:Property, value:[String:AnyObject]?) -> CAAnimation {
         var keyPath = "transform"
         switch prop {
         case .ScaleX:
@@ -152,7 +152,7 @@ public class Cyclops {
     }
     
     
-    func animationValue(frame:FrameData, curve:CurveData, prop:Property, value: NSValue?) ->  AnyObject {
+    func animationValue(frame:FrameData, curve:CurveData, prop:Property, value: [String:AnyObject]?) ->  AnyObject {
         switch prop {
         case .ScaleX:
             return (frame.values[0] ?? 100.0) / 100.0
@@ -163,22 +163,20 @@ public class Cyclops {
         case .Position:
             var adjustX = 0.0
             var adjustY = 0.0
-            if let center = value?.CGPointValue() {
+            if let center = (value?["center"] as? NSValue)?.CGPointValue() {
                 adjustX = Double(center.x)
                 adjustY = Double(center.y)
             }
-            
             // Make relative position
             let x = (frame.values[0] ?? 0.0) - curve.begin[0] + adjustX
             let y = (frame.values[1] ?? 0.0) - curve.begin[1] + adjustY
             return NSValue(CGPoint: CGPointMake(CGFloat(x), CGFloat(y)))
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI * -1
-            var adjust = 0.0
-            if let initialRotation = value as? NSNumber {
-                adjust = initialRotation.doubleValue
-            }
+            let adjust = value?["initialRotation"] as? Double ?? 0.0
+            let invert = value?["invert"] as? Bool ?? false
             return angle + adjust
+            return angle * (invert ? -1 : 1) + adjust
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
         }
