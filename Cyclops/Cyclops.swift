@@ -168,15 +168,15 @@ public class Cyclops {
         case .ScaleZ:
             return (frame.values[2] ?? 100.0) / 100.0
         case .Position:
-            var adjustX = 0.0
-            var adjustY = 0.0
-            if let center = (value?["center"] as? NSValue)?.CGPointValue() {
-                adjustX = Double(center.x)
-                adjustY = Double(center.y)
+            var initialX = 0.0
+            var initialY = 0.0
+            if let center = (value?["initial"] as? NSValue)?.CGPointValue() {
+                initialX = Double(center.x)
+                initialY = Double(center.y)
             }
             // Make relative position
-            let x = (frame.values[0] ?? 0.0) - curve.begin[0] + adjustX
-            let y = (frame.values[1] ?? 0.0) - curve.begin[1] + adjustY
+            let x = (frame.values[0] ?? 0.0) - curve.begin[0] + initialX
+            let y = (frame.values[1] ?? 0.0) - curve.begin[1] + initialY
             return NSValue(CGPoint: CGPointMake(CGFloat(x), CGFloat(y)))
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI * -1

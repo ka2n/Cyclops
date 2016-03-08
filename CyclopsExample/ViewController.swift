@@ -31,7 +31,7 @@ class ViewController: UIViewController {
             group.animations = [
                 cyc.animation("example-x rotation", ofProperty: .RotationX)!,
                 cyc.animation("example-z rotation", ofProperty: .RotationZ)!,
-                cyc.animation("example-position", ofProperty: .Position, value: ["center": NSValue(CGPoint: self.view.center)])!,
+                cyc.animation("example-position", ofProperty: .Position, value: ["initial": NSValue(CGPoint: self.view.center)])!,
                 cyc.animation("example-scale", ofProperty: .Scale)!,
                 cyc.animation("example-opacity", ofProperty: .Opacity)!
             ]
