@@ -28,15 +28,15 @@ public enum Property {
 
 
 public struct CurveData {
-    let frames : [FrameData]
-    let duration : Double
-    let startTime : Double
-    let begin: [Double]
+    public let frames : [FrameData]
+    public let duration : Double
+    public let startTime : Double
+    public let begin: [Double]
 }
 
 public struct FrameData {
-    let time: Double
-    let values: [Double]
+    public let time: Double
+    public let values: [Double]
 }
 
 private func JSONObjectWithData(data: NSData) -> AnyObject? {
