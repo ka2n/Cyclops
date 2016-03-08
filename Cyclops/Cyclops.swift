@@ -16,6 +16,7 @@ public enum Property {
     case RotationX
     case RotationY
     case RotationZ
+    case Opacity
     
     // Inner use only for now    
     case ScaleX
@@ -24,14 +25,14 @@ public enum Property {
 }
 
 
-struct CurveData {
+public struct CurveData {
     let frames : [FrameData]
     let duration : Double
     let startTime : Double
     let begin: [Double]
 }
 
-struct FrameData {
+public struct FrameData {
     let time: Double
     let values: [Double]
 }
@@ -90,6 +91,10 @@ public class Cyclops {
         return FrameData(time: time, values: values)
     }
     
+    public func curve(name:String) -> CurveData? {
+        return curves[name]
+    }
+    
     public func animation(name:String, ofProperty prop:Property) -> CAAnimation? {
         return animation(name, ofProperty: prop, value: nil)
     }
@@ -128,6 +133,8 @@ public class Cyclops {
             keyPath = "transform.rotation.y"
         case .RotationZ:
             keyPath = "transform.rotation.z"
+        case .Opacity:
+            keyPath = "opacity"
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
         }
@@ -176,6 +183,8 @@ public class Cyclops {
             let adjust = value?["initialRotation"] as? Double ?? 0.0
             let invert = value?["invert"] as? Bool ?? false
             return angle * (invert ? -1 : 1) + adjust
+        case .Opacity:
+            return frame.values[0] / 100.0
         case .Scale:
             fatalError("please extract to .ScaleX, .ScaleY, .ScaleZ first.")
         }

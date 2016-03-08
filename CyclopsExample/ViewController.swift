@@ -32,7 +32,8 @@ class ViewController: UIViewController {
                 cyc.animation("example-x rotation", ofProperty: .RotationX)!,
                 cyc.animation("example-z rotation", ofProperty: .RotationZ)!,
                 cyc.animation("example-position", ofProperty: .Position, value: ["center": NSValue(CGPoint: self.view.center)])!,
-                cyc.animation("example-scale", ofProperty: .Scale)!
+                cyc.animation("example-scale", ofProperty: .Scale)!,
+                cyc.animation("example-opacity", ofProperty: .Opacity)!
             ]
             group.duration = group.animations!.first!.duration
             group.repeatCount = 10000
