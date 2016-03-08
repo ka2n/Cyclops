@@ -13,6 +13,8 @@ import QuartzCore.CAAnimation
 public enum Property {
     case Scale
     case Position
+    case PositionX
+    case PositionY
     case RotationX
     case RotationY
     case RotationZ
@@ -127,6 +129,10 @@ public class Cyclops {
             keyPath = "transform.scale.z"
         case .Position:
             keyPath = "position"
+        case .PositionX:
+            keyPath = "position.x"
+        case .PositionY:
+            keyPath = "position.y"
         case .RotationX:
             keyPath = "transform.rotation.x"
         case .RotationY:
@@ -178,6 +184,12 @@ public class Cyclops {
             let x = (frame.values[0] ?? 0.0) - curve.begin[0] + initialX
             let y = (frame.values[1] ?? 0.0) - curve.begin[1] + initialY
             return NSValue(CGPoint: CGPointMake(CGFloat(x), CGFloat(y)))
+        case .PositionX, .PositionY:
+            var initial = 0.0
+            if let pos = (value?["initial"] as? NSNumber)?.doubleValue {
+                initial = pos
+            }
+            return (frame.values[0] ?? 0.0) - curve.begin[0] + initial
         case .RotationX, .RotationY, .RotationZ:
             let angle = frame.values.first! / 180.0 * M_PI * -1
             let adjust = value?["initialRotation"] as? Double ?? 0.0
